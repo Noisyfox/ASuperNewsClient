@@ -1,6 +1,7 @@
 package org.foxteam.noisyfox.widget;
 
-import android.animation.IntEvaluator;
+import com.actionbarsherlock.internal.nineoldandroids.animation.IntEvaluator;
+
 import android.view.View;
 import android.view.ViewGroup;
 

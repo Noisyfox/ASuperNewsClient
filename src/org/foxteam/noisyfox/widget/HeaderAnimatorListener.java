@@ -1,7 +1,8 @@
 package org.foxteam.noisyfox.widget;
 
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
+import com.actionbarsherlock.internal.nineoldandroids.animation.Animator;
+import com.actionbarsherlock.internal.nineoldandroids.animation.Animator.AnimatorListener;
+
 import android.view.ViewGroup;
 
 public class HeaderAnimatorListener implements AnimatorListener {

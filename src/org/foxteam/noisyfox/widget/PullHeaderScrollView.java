@@ -2,7 +2,8 @@ package org.foxteam.noisyfox.widget;
 
 import org.foxteam.asupernewsclient.R;
 
-import android.animation.ValueAnimator;
+import com.actionbarsherlock.internal.nineoldandroids.animation.ValueAnimator;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -15,20 +16,26 @@ import android.widget.ScrollView;
 public class PullHeaderScrollView extends ScrollView implements IHeaderPull {
 
 	private View mHeaderView;
-	private int mHeaderHeightMin = 500, mHeaderHeightMax = 1000;
+	private int mHeaderHeightMin, mHeaderHeightMax;
 	private float mHeadY;
 
 	public PullHeaderScrollView(Context context) {
 		super(context);
+		mHeaderHeightMin = Util.dip2px(context, 200);
+		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
 	public PullHeaderScrollView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		mHeaderHeightMin = Util.dip2px(context, 200);
+		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
 	public PullHeaderScrollView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
+		mHeaderHeightMin = Util.dip2px(context, 200);
+		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
 	public final void setHeaderHeight(int minHeight, int maxHeight) {
