@@ -2,7 +2,6 @@ package org.foxteam.asupernewsclient.contentview;
 
 import java.io.IOException;
 import java.util.LinkedList;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -12,7 +11,19 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 public class DocumentContentView implements ContentView {
+	static final String TAG_STYLE = "style";
+	static final String TAG_STYLE_ATTR_TYPE = "type";
+
+	static final String VALUE_STYLE_TYPE_CSS = "text/css";
+
 	private LinkedList<ContentView> mContents = new LinkedList<ContentView>();
+
+	private Styles mBaseStyle = new Styles();
+	private Styles mDocumentStyle = mBaseStyle.getOverrideStyles(TAG_DOCUMENT);
+
+	public DocumentContentView() {
+
+	}
 
 	@Override
 	public View getView(Context context, XmlPullParser parser, ViewGroup parent)
@@ -47,9 +58,12 @@ public class DocumentContentView implements ContentView {
 				tagName = parser.getName();
 				ContentView cv;
 				if (TAG_TEXT.equals(tagName)) {
-					cv = new TextContentView();
+					cv = new TextContentView(mDocumentStyle);
 				} else if (TAG_IMAGE.equals(tagName)) {
 					cv = new ImageContentView();
+				} else if (TAG_STYLE.equals(tagName)) {
+					parseStyle(parser);
+					break;
 				} else {
 					lookingForEndOfUnknownTag = true;
 					unknownTagName = tagName;
@@ -79,6 +93,58 @@ public class DocumentContentView implements ContentView {
 		}
 
 		return parent;
+	}
+
+	private void parseStyle(XmlPullParser parser)
+			throws XmlPullParserException, IOException {
+		int eventType = parser.getEventType();
+		String tagName;
+
+		if (eventType != XmlPullParser.START_TAG) {
+			throw new RuntimeException("Expecting START_TAG");
+		}
+
+		tagName = parser.getName();
+
+		if (!TAG_STYLE.equals(tagName)) {
+			throw new RuntimeException("Expecting " + TAG_STYLE + ", got "
+					+ tagName);
+		}
+
+		int attrCount = parser.getAttributeCount();
+		String attrName, attrValue;
+		for (int i = 0; i < attrCount; i++) {
+			attrName = parser.getAttributeName(i);
+			if (TAG_STYLE_ATTR_TYPE.equals(attrName)) {
+				attrValue = parser.getAttributeValue(i);
+				if (!VALUE_STYLE_TYPE_CSS.equals(attrValue)) {
+					throw new RuntimeException("Style only support "
+							+ VALUE_STYLE_TYPE_CSS + ", got " + attrValue);
+				}
+			} else {
+
+			}
+		}
+
+		eventType = parser.next();
+		if (eventType != XmlPullParser.TEXT) {
+			throw new RuntimeException("Expecting TEXT");
+		}
+
+		String stylesStr = parser.getText();
+		mDocumentStyle.readStyle(stylesStr);
+
+		eventType = parser.next();
+		if (eventType != XmlPullParser.END_TAG) {
+			throw new RuntimeException("Expecting END_TAG");
+		}
+
+		tagName = parser.getName();
+
+		if (!TAG_STYLE.equals(tagName)) {
+			throw new RuntimeException("Expecting " + TAG_STYLE + ", got "
+					+ tagName);
+		}
 	}
 
 	@Override
