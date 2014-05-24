@@ -19,10 +19,15 @@ public class DocumentContentView implements ContentView {
 	private LinkedList<ContentView> mContents = new LinkedList<ContentView>();
 
 	private Styles mBaseStyle = new Styles();
-	private Styles mDocumentStyle = mBaseStyle.getOverrideStyles(TAG_DOCUMENT);
+	private Styles mDocumentStyle;
 
 	public DocumentContentView() {
-
+		mBaseStyle.readStyle("FoxDocument{}" + "FoxDocument p{}"
+				+ "FoxDocument p i{font-style:italic;}"
+				+ "FoxDocument p b{font-weight:bold;}"
+				+ "FoxDocument p u{text-decoration:+underline;}"
+				+ "FoxDocument p del{text-decoration:+line-through;}");
+		mDocumentStyle = mBaseStyle.growStyles(TAG_DOCUMENT);
 	}
 
 	@Override

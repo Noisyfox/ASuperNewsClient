@@ -2,11 +2,8 @@ package org.foxteam.asupernewsclient.contentview;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,10 +15,7 @@ import android.text.style.UnderlineSpan;
 import android.util.Log;
 
 public class Styles {
-	/*
-	 * color:#00ff00; background-color:rgb(250,0,255); text-indent:2em;
-	 * font-family:Arial,Verdana,Sans-serif; font-size:100%; font-style:italic;
-	 */
+
 	protected static final String STYLE_SPANABLE_COLOR = "color";
 	protected static final String STYLE_SPANABLE_BACKGROUND_COLOR = "background-color";
 	protected static final String STYLE_SPANABLE_FONT_FAMILY = "font-family:";
@@ -42,116 +36,69 @@ public class Styles {
 			Pattern.MULTILINE | Pattern.DOTALL);
 
 	private String mTag = null;
-	//private Styles mBase = null;
+
 	private HashMap<String, String> mCurrentStyles = new HashMap<String, String>();
 	private HashMap<String, Styles> mChildStyles = new HashMap<String, Styles>();
-	// private HashMap<String, HashMap<String, String>> mChildStyles_old = new
-	// HashMap<String, HashMap<String, String>>();
-	private Styles mSuper = null;
 
-	public Styles getOverrideStyles(String tag) {
-		Styles base = mChildStyles.get(tag);
-		if (base == null) {
-			return getChildStyles(tag);
+	public String getTag() {
+		return mTag;
+	}
+
+	public Styles growStyles(String tag) {
+		Styles ns = new Styles();
+		ns.mTag = tag;
+
+		// 应用父样式
+		for (Entry<String, String> s : mCurrentStyles.entrySet()) {
+			ns.putStyle(s.getKey(), s.getValue());
+		}
+		for (Entry<String, Styles> s : mChildStyles.entrySet()) {
+			ns.mChildStyles.put(s.getKey(), s.getValue());
 		}
 
-		Styles c = new Styles();
-		c.mTag = tag;
-		c.mSuper = base;
-
-		return c;
-	}
-
-	public Styles getChildStyles(String tag) {
-		Styles c = new Styles();
-		c.mSuper = this;
-		c.mTag = tag;
-
-		return c;
-	}
-
-	/*
-	 * public String findStyle(String tag, String name) { String v;
-	 * 
-	 * if (tag != null) { HashMap<String, String> t = mChildStyles_old.get(tag);
-	 * if (t != null) { v = t.get(name);
-	 * 
-	 * if (v != null) { return v; } } }
-	 * 
-	 * v = mCurrentStyles.get(name);
-	 * 
-	 * if (v != null) { return v; }
-	 * 
-	 * if (mSuper == null) { return null; }
-	 * 
-	 * return mSuper.findStyle(mTag, name); }
-	 * 
-	 * public String findStyle(String name) { return findStyle(null, name); }
-	 */
-
-	public String findStyle(String tag, String name) {
-		String v = "";
-
-		Styles cStyles = this;
-		while (cStyles != null) {
-			String s = cStyles.mCurrentStyles.get(name);
-			if (s != null) {
-				if (s.startsWith("+")) {
-					v = s.substring(1) + " " + v;
-				} else {
-					v = s + " " + v;
-					break;
-				}
+		// 如果有下级样式
+		Styles sc = mChildStyles.get(tag);
+		if (sc != null) {
+			for (Entry<String, String> s : sc.mCurrentStyles.entrySet()) {
+				ns.putStyle(s.getKey(), s.getValue());
 			}
-
-			//if (cStyles.mBase != null) {
-			//	cStyles = cStyles.mBase;
-			//} else {
-				Styles c = cStyles;
-				cStyles = cStyles.mSuper;
-				if (cStyles != null && tag != null) {
-					Styles us = cStyles.mChildStyles.get(tag);
-					if (us != null && us != c) {
-						s = us.mCurrentStyles.get(name);
-						if (s != null) {
-							if (s.startsWith("+")) {
-								v = s.substring(1) + " " + v;
-							} else {
-								v = s + " " + v;
-								break;
-							}
-						}
-					}
-				}
-			//}
+			for (Entry<String, Styles> s : sc.mChildStyles.entrySet()) {
+				ns.mChildStyles.put(s.getKey(), s.getValue());
+			}
 		}
 
-		v = v.trim();
-
-		return v.isEmpty() ? null : v;
-	}
-
-	public void putStyle(String name, String value) {
-		mCurrentStyles.put(name, value);
+		return ns;
 	}
 
 	public void putStyle(String tag, String name, String value) {
 		if (tag == null) {
-			putStyle(name, value);
+			mCurrentStyles.put(name, value);
 			return;
 		}
 
 		String ch[] = tag.split(" ");
 		Styles s = this;
-		for(String str : ch){
+		for (String str : ch) {
 			Styles f = s;
 			s = f.mChildStyles.get(str);
 			if (s == null) {
-				s = f.getChildStyles(str);
+				s = new Styles();
+				s.mTag = str;
 				f.mChildStyles.put(str, s);
 			}
 		}
-		s.putStyle(name, value);
+		s.mCurrentStyles.put(name, value);
+	}
+
+	public void putStyle(String name, String value) {
+		if (value.startsWith("+")) {
+			value = value.substring(1);
+			String oV = mCurrentStyles.get(name);
+			if (oV != null) {
+				value = oV + " " + value;
+			}
+		}
+		mCurrentStyles.put(name, value);
 	}
 
 	public void readStyle(String css) {
@@ -190,69 +137,16 @@ public class Styles {
 		}
 	}
 
-	private void mergeStyles(HashMap<String, Queue<String>> des,
-			HashMap<String, String> src) {
-		Set<Entry<String, String>> ss = src.entrySet();
-		for (Entry<String, String> _s : ss) {
-			String k = _s.getKey();
-			Queue<String> q = des.get(k);
-			if (q == null) {
-				q = new LinkedList<String>();
-				des.put(k, q);
-			}
-			q.offer(_s.getValue());
-		}
+	public String findStyle(String name) {
+		return mCurrentStyles.get(name);
 	}
 
 	public List<Object> toSpans() {
 		List<Object> sps = new ArrayList<Object>();
 
-		// ArrayList<Entry<String, String>> slist = new ArrayList<Entry<String,
-		// String>>();
-
-		HashMap<String, Queue<String>> sMap = new HashMap<String, Queue<String>>();
-
-		Styles cStyles = this;
-		while (cStyles != null) {
-			mergeStyles(sMap, cStyles.mCurrentStyles);
-
-			//if (cStyles.mBase != null) {
-			//	cStyles = cStyles.mBase;
-			//} else {
-				Styles c = cStyles;
-				cStyles = cStyles.mSuper;
-				if (cStyles != null && mTag != null) {
-					Styles us = cStyles.mChildStyles.get(mTag);
-					if (us != null && us != c) {
-						mergeStyles(sMap, us.mCurrentStyles);
-					}
-				}
-			//}
-		}
-
-		/*
-		 * if (mSuper != null && mTag != null &&
-		 * mSuper.mChildStyles_old.containsKey(mTag)) { Set<Entry<String,
-		 * String>> _ss = mSuper.mChildStyles_old.get(mTag) .entrySet(); for
-		 * (Entry<String, String> _s : _ss) { if
-		 * (!mCurrentStyles.containsKey(_s.getKey())) { slist.add(_s); } } }
-		 */
-
-		String styleName, styleValue;
-		for (Entry<String, Queue<String>> _s : sMap.entrySet()) {
-			styleName = _s.getKey();
-			styleValue = "";
-			Queue<String> q = _s.getValue();
-			while (!q.isEmpty()) {
-				String s = q.poll();
-				if (s.startsWith("+")) {
-					styleValue = s.substring(1) + " " + styleValue;
-				} else {
-					styleValue = s + " " + styleValue;
-					break;
-				}
-			}
-			styleValue = styleValue.trim();
+		for (Entry<String, String> _s : mCurrentStyles.entrySet()) {
+			String styleName = _s.getKey();
+			String styleValue = _s.getValue();
 
 			if (STYLE_SPANABLE_COLOR.equals(styleName)) {
 				sps.add(new android.text.style.ForegroundColorSpan(
@@ -292,14 +186,6 @@ public class Styles {
 
 		return sps;
 	}
-
-	/*
-	 * currentStyle.putStyle("text-decoration", "line-through"); //
-	 * spans.add(new StrikethroughSpan()); } else if
-	 * (TAG_TEXT_UNDERLINE.equals(expectedTagName)) {
-	 * currentStyle.putStyle("text-decoration", "underline"); // spans.add(new
-	 * UnderlineSpan());
-	 */
 
 	public static float parsePersent(String persent) {
 		if (persent.endsWith("%")) {

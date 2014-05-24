@@ -16,19 +16,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class TextContentView implements ContentView {
-
-	protected static final String TAG_TEXT_ITALIC = "i";
-	protected static final String TAG_TEXT_BOLD = "b";
-	protected static final String TAG_TEXT_STRIKE = "del";
-	protected static final String TAG_TEXT_UNDERLINE = "u";
-
 	protected static final String TAG_TEXT_ATTR_STYLE = "style";
 
 	private SpannableStringBuilder mTextBuilder;
 	private Styles mContentStyles;
 
 	public TextContentView(Styles baseStyle) {
-		mContentStyles = baseStyle.getOverrideStyles(TAG_TEXT);
+		mContentStyles = baseStyle.growStyles(TAG_TEXT);
 	}
 
 	@Override
@@ -79,22 +73,23 @@ public class TextContentView implements ContentView {
 		}
 
 		if (TAG_TEXT.equals(expectedTagName)) {
-			String i = currentStyle.findStyle(TAG_TEXT,
-					Styles.STYLE_SPANABLE_TEXT_INDENT);
+			String i = currentStyle
+					.findStyle(Styles.STYLE_SPANABLE_TEXT_INDENT);
 			if (i != null) {
 				styles.text_indent = Styles.parseEm(i);
 			}
-		} else if (TAG_TEXT_ITALIC.equals(expectedTagName)) {
-			currentStyle.putStyle(Styles.STYLE_SPANABLE_FONT_STYLE, "italic");
-		} else if (TAG_TEXT_BOLD.equals(expectedTagName)) {
-			currentStyle.putStyle(Styles.STYLE_SPANABLE_FONT_WEIGHT, "bold");
-		} else if (TAG_TEXT_STRIKE.equals(expectedTagName)) {
-			currentStyle.putStyle(Styles.STYLE_SPANABLE_TEXT_DECORATION,
-					"+line-through");
-		} else if (TAG_TEXT_UNDERLINE.equals(expectedTagName)) {
-			currentStyle.putStyle(Styles.STYLE_SPANABLE_TEXT_DECORATION,
-					"+underline");
-		} else {
+		}/*
+		 * else if (TAG_TEXT_ITALIC.equals(expectedTagName)) {
+		 * currentStyle.putStyle(Styles.STYLE_SPANABLE_FONT_STYLE, "italic"); }
+		 * else if (TAG_TEXT_BOLD.equals(expectedTagName)) {
+		 * currentStyle.putStyle(Styles.STYLE_SPANABLE_FONT_WEIGHT, "bold"); }
+		 * else if (TAG_TEXT_STRIKE.equals(expectedTagName)) {
+		 * currentStyle.putStyle(Styles.STYLE_SPANABLE_TEXT_DECORATION,
+		 * "+line-through"); } else if
+		 * (TAG_TEXT_UNDERLINE.equals(expectedTagName)) {
+		 * currentStyle.putStyle(Styles.STYLE_SPANABLE_TEXT_DECORATION,
+		 * "+underline"); }
+		 */else {
 
 		}
 
@@ -116,7 +111,7 @@ public class TextContentView implements ContentView {
 				break;
 			case XmlPullParser.START_TAG:
 				tagName = parser.getName();
-				parseTag(parser, currentStyle.getOverrideStyles(tagName));
+				parseTag(parser, currentStyle.growStyles(tagName));
 				break;
 			case XmlPullParser.END_TAG:
 				tagName = parser.getName();

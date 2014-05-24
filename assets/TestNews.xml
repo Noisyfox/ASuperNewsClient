@@ -3,12 +3,13 @@
 
     <style type="text/css">
         p{
-        	color:#00ff00;
+        	color:#fff;
         	background-color:rgb(0,0,255);
         	text-indent:2em;
         	font-family:Arial,Verdana,Sans-serif;
         	font-size:100%;
         }
+
         p span{
         	color:#ff0000;
         	background-color:#00ff00;
