@@ -43,6 +43,15 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 	}
 
 	@Override
+	public void addHeaderView(View v) {
+		mHeaderView = v;
+		AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(
+				getLayoutParams().width, mHeaderHeightMin);
+		mHeaderView.setLayoutParams(layoutParams);
+		super.addHeaderView(v);
+	}
+
+	@Override
 	public void addHeaderView(View v, Object data, boolean isSelectable) {
 		mHeaderView = v;
 		AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(
