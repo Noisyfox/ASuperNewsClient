@@ -1,7 +1,5 @@
 package org.foxteam.noisyfox.widget;
 
-import org.foxteam.asupernewsclient.R;
-
 import com.actionbarsherlock.internal.nineoldandroids.animation.ValueAnimator;
 
 import android.content.Context;
@@ -10,30 +8,30 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.AbsListView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class PullHeaderScrollView extends ScrollView implements IHeaderPull {
+public class PullHeaderListView extends StickyListHeadersListView implements
+		IHeaderPull {
 
 	private View mHeaderView;
 	private int mHeaderHeightMin, mHeaderHeightMax;
 	private float mHeadY;
 	private OnPullListener mOnPullListener;
 
-	public PullHeaderScrollView(Context context) {
+	public PullHeaderListView(Context context) {
 		super(context);
 		mHeaderHeightMin = Util.dip2px(context, 200);
 		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
-	public PullHeaderScrollView(Context context, AttributeSet attrs) {
+	public PullHeaderListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mHeaderHeightMin = Util.dip2px(context, 200);
 		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
-	public PullHeaderScrollView(Context context, AttributeSet attrs,
-			int defStyle) {
+	public PullHeaderListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		mHeaderHeightMin = Util.dip2px(context, 200);
 		mHeaderHeightMax = Util.dip2px(context, 300);
@@ -42,28 +40,24 @@ public class PullHeaderScrollView extends ScrollView implements IHeaderPull {
 	public final void setHeaderHeight(int minHeight, int maxHeight) {
 		mHeaderHeightMin = minHeight;
 		mHeaderHeightMax = maxHeight;
-
-		LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, mHeaderHeightMin);
-		mHeaderView.setLayoutParams(localLayoutParams);
 	}
 
 	@Override
-	protected void onFinishInflate() {
-		super.onFinishInflate();
-		mHeaderView = findViewById(R.id.header_layout);
-		if (mHeaderView == null) {
-			mHeaderView = ((ViewGroup) getChildAt(0)).getChildAt(0);
-		}
-		LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, mHeaderHeightMin);
-		mHeaderView.setLayoutParams(localLayoutParams);
+	public void addHeaderView(View v, Object data, boolean isSelectable) {
+		mHeaderView = v;
+		AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(
+				getLayoutParams().width, mHeaderHeightMin);
+		mHeaderView.setLayoutParams(layoutParams);
+		super.addHeaderView(v, data, isSelectable);
 	}
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-			mHeadY = ev.getY();
+		switch (ev.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			if (mHeaderView.getTop() == 0) {
+				mHeadY = ev.getY();
+			}
 		}
 		return super.onInterceptTouchEvent(ev);
 	}
@@ -156,5 +150,4 @@ public class PullHeaderScrollView extends ScrollView implements IHeaderPull {
 	public int getHeaderMaxHeight() {
 		return mHeaderHeightMax;
 	}
-
 }

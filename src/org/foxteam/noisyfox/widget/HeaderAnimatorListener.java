@@ -7,25 +7,28 @@ import android.view.ViewGroup;
 
 public class HeaderAnimatorListener implements AnimatorListener {
 
-	private PullHeaderScrollView mPullHeaderScrollView;
+	private IHeaderPull mPullHeaderView;
 	private ViewGroup.LayoutParams mLayoutParams;
 	private boolean mRefresh;
 
-	public HeaderAnimatorListener(PullHeaderScrollView pullHeaderScrollView,
+	public HeaderAnimatorListener(IHeaderPull pullHeaderView,
 			ViewGroup.LayoutParams layoutParams) {
-		mPullHeaderScrollView = pullHeaderScrollView;
+		mPullHeaderView = pullHeaderView;
 		mLayoutParams = layoutParams;
 	}
 
 	@Override
 	public void onAnimationStart(Animator animation) {
-		mRefresh = mLayoutParams.height >= mPullHeaderScrollView.getMaxHeight();
+		mRefresh = mLayoutParams.height >= mPullHeaderView.getHeaderMaxHeight();
 	}
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
 		if (mRefresh) {
-			// TODO Get and call listener
+			OnPullListener l = mPullHeaderView.getOnPullListener();
+			if (l != null) {
+				l.onRelease();
+			}
 		}
 	}
 
