@@ -67,7 +67,7 @@ public class HeaderPagerContainer extends RelativeLayout implements
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		onSizeChanged(w, h, oldw, oldh);
+		super.onSizeChanged(w, h, oldw, oldh);
 		mPointPagerCenter.x = w / 2;
 		mPointPagerCenter.y = h / 2;
 	}
