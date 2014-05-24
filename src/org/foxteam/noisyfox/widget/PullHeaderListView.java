@@ -131,7 +131,7 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 	@Override
 	public void pull(int height) {
 		if (mOnPullListener != null) {
-			float p = 100.0F * ((height - mHeaderHeightMin) / (mHeaderHeightMax - mHeaderHeightMin));
+			float p = 100.0F * ((float) (height - mHeaderHeightMin) / (float) (mHeaderHeightMax - mHeaderHeightMin));
 			mOnPullListener.onPull((int) (p / 0.7F));
 		}
 	}
