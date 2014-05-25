@@ -16,11 +16,14 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.app.Activity;
+import android.content.Intent;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnItemClickListener {
 
 	private PullHeaderListView mMainList;
 	private ArcProgress progressView;
@@ -79,6 +82,7 @@ public class MainActivity extends Activity {
 
 		mMainList.addHeaderView(mHeaderView);
 		mMainList.setAdapter(mAdapter);
+		mMainList.setOnItemClickListener(this);
 
 		for (int i = 1; i <= 5; i++) {
 			HeaderNews hn = new HeaderNews();
@@ -95,9 +99,6 @@ public class MainActivity extends Activity {
 		mCirclePageIndicator.setViewPager(mHeaderViewPagerContainer
 				.getViewPager());
 		mCirclePageIndicator.setOnPageChangeListener(mHeaderViewPagerContainer);
-		// Intent i = new Intent();
-		// i.setClass(this, NewsActivity.class);
-		// this.startActivity(i);
 	}
 
 	private class HeaderNews extends NewsData {
@@ -239,5 +240,14 @@ public class MainActivity extends Activity {
 			TextView text;
 			ImageView image;
 		}
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		Intent i = new Intent();
+		i.setClass(this, NewsActivity.class);
+		startActivity(i);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
 	}
 }

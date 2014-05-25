@@ -10,7 +10,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
 import android.widget.LinearLayout;
 
 public class NewsActivity extends Activity {
@@ -56,10 +55,9 @@ public class NewsActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.news, menu);
-		return true;
+	public void finish() {
+		super.finish();
+		overridePendingTransition(R.anim.stay, R.anim.slide_out_right);
 	}
 
 }
