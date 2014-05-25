@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="main_list_header_left_label_background">#ffd00000</color>
+    <color name="main_list_header_left_label_font">#ffffffff</color>
+    <color name="main_list_header_right_label_font">#ffffffff</color>
+    <color name="main_list_header_right_label_background">#ffbb1000</color>
+
+</resources>

@@ -4,6 +4,7 @@ import org.foxteam.asupernewsclient.R;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ public class HeaderPagerContainer extends RelativeLayout implements
 	private ViewPager mViewPager;
 	private Point mPointPagerCenter = new Point();
 	private Point mPointTouch = new Point();
+	private OnPageChangeListener mOnPageChangeListener;
 
 	public HeaderPagerContainer(Context context) {
 		super(context);
@@ -35,6 +37,14 @@ public class HeaderPagerContainer extends RelativeLayout implements
 		return mViewPager;
 	}
 
+	public void setOnPageChangeListener(OnPageChangeListener l) {
+		mOnPageChangeListener = l;
+	}
+
+	public void setAdapter(PagerAdapter adapter) {
+		mViewPager.setAdapter(adapter);
+	}
+
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
@@ -43,6 +53,7 @@ public class HeaderPagerContainer extends RelativeLayout implements
 			if (mViewPager == null) {
 				mViewPager = (ViewPager) getChildAt(0);
 			}
+			mViewPager.setOnPageChangeListener(this);
 		} catch (Exception localException) {
 			throw new IllegalStateException(
 					"The first child of PagerContainer must be a ViewPager");
@@ -51,11 +62,17 @@ public class HeaderPagerContainer extends RelativeLayout implements
 
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
+		if (mOnPageChangeListener != null) {
+			mOnPageChangeListener.onPageScrollStateChanged(arg0);
+		}
 		mStateChanged = arg0 != 0;
 	}
 
 	@Override
 	public void onPageScrolled(int arg0, float arg1, int arg2) {
+		if (mOnPageChangeListener != null) {
+			mOnPageChangeListener.onPageScrolled(arg0, arg1, arg2);
+		}
 		if (mStateChanged) {
 			invalidate();
 		}
@@ -63,6 +80,9 @@ public class HeaderPagerContainer extends RelativeLayout implements
 
 	@Override
 	public void onPageSelected(int arg0) {
+		if (mOnPageChangeListener != null) {
+			mOnPageChangeListener.onPageSelected(arg0);
+		}
 	}
 
 	@Override

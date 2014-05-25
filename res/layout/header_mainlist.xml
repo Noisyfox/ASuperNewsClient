@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <org.foxteam.noisyfox.widget.HeaderPagerContainer
+        android:id="@+id/header_pager_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <org.foxteam.noisyfox.widget.NoInterceptViewPager
+            android:id="@id/header_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <com.viewpagerindicator.CirclePageIndicator
+            android:id="@+id/indicator"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            app:fillColor="#ffffffff"
+            app:pageColor="#ff888888"
+            app:strokeWidth="0dp" />
+    </org.foxteam.noisyfox.widget.HeaderPagerContainer>
+
+    <FrameLayout
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp" >
+
+        <org.foxteam.noisyfox.widget.ArcProgress
+            android:id="@+id/news_progress"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <ProgressBar
+            android:id="@+id/news_progressbar"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</RelativeLayout>
