@@ -72,7 +72,7 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent ev) {
+	public boolean dispatchTouchEvent(MotionEvent ev) {
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			mHeadY = ev.getY();
@@ -88,7 +88,8 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 				i = Math.max(mHeaderHeightMin - layoutParams.height, distance);
 			}
 
-			if ((getScrollY() != 0) || (layoutParams.height < mHeaderHeightMin)
+			if ((mHeaderView.getTop() != 0)
+					|| (layoutParams.height < mHeaderHeightMin)
 					|| (layoutParams.height > mHeaderHeightMax) || (i == 0)) {
 				mHeadY = y;
 				break;
@@ -134,7 +135,7 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 		}
 		}
 
-		return super.onTouchEvent(ev);
+		return super.dispatchTouchEvent(ev);
 	}
 
 	@Override
