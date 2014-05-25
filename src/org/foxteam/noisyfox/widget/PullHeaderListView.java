@@ -7,32 +7,37 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnTouchListener;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AbsListView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class PullHeaderListView extends StickyListHeadersListView implements
-		IHeaderPull {
+		IHeaderPull, OnTouchListener {
 
 	private View mHeaderView;
 	private int mHeaderHeightMin, mHeaderHeightMax;
 	private float mHeadY;
 	private OnPullListener mOnPullListener;
+	private OnTouchListener mOnTouchListener;
 
 	public PullHeaderListView(Context context) {
 		super(context);
+		super.setOnTouchListener(this);
 		mHeaderHeightMin = Util.dip2px(context, 200);
 		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
 	public PullHeaderListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		super.setOnTouchListener(this);
 		mHeaderHeightMin = Util.dip2px(context, 200);
 		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
 
 	public PullHeaderListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		super.setOnTouchListener(this);
 		mHeaderHeightMin = Util.dip2px(context, 200);
 		mHeaderHeightMax = Util.dip2px(context, 300);
 	}
@@ -72,7 +77,48 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 	}
 
 	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
+	public void setOnTouchListener(final OnTouchListener l) {
+		mOnTouchListener = l;
+	}
+
+	@Override
+	public void pull(int height) {
+		if (mOnPullListener != null) {
+			float p = 100.0F * ((float) (height - mHeaderHeightMin) / (float) (mHeaderHeightMax - mHeaderHeightMin));
+			mOnPullListener.onPull((int) (p / 0.7F));
+		}
+	}
+
+	@Override
+	public void setOnPullListener(OnPullListener l) {
+		mOnPullListener = l;
+	}
+
+	@Override
+	public OnPullListener getOnPullListener() {
+		return mOnPullListener;
+	}
+
+	@Override
+	public int getHeaderMaxHeight() {
+		return mHeaderHeightMax;
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent ev) {
+		if (mOnTouchListener != null && mOnTouchListener.onTouch(this, ev)) {
+			return true;
+		}
+
+		return super.onTouchEvent(ev);
+	}
+
+	@Override
+	public final boolean onTouch(View v, MotionEvent ev) {
+		if (mOnTouchListener != null && mOnTouchListener.onTouch(this, ev)) {
+			return true;
+		}
+
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			mHeadY = ev.getY();
@@ -135,29 +181,6 @@ public class PullHeaderListView extends StickyListHeadersListView implements
 		}
 		}
 
-		return super.dispatchTouchEvent(ev);
-	}
-
-	@Override
-	public void pull(int height) {
-		if (mOnPullListener != null) {
-			float p = 100.0F * ((float) (height - mHeaderHeightMin) / (float) (mHeaderHeightMax - mHeaderHeightMin));
-			mOnPullListener.onPull((int) (p / 0.7F));
-		}
-	}
-
-	@Override
-	public void setOnPullListener(OnPullListener l) {
-		mOnPullListener = l;
-	}
-
-	@Override
-	public OnPullListener getOnPullListener() {
-		return mOnPullListener;
-	}
-
-	@Override
-	public int getHeaderMaxHeight() {
-		return mHeaderHeightMax;
+		return false;
 	}
 }
