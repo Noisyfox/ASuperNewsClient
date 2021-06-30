@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,7 +24,8 @@ import android.widget.TextView;
 import android.app.Activity;
 import android.content.Intent;
 
-public class MainActivity extends Activity implements OnItemClickListener {
+public class MainActivity extends Activity implements OnItemClickListener,
+		OnClickListener {
 
 	private PullHeaderListView mMainList;
 	private ArcProgress progressView;
@@ -139,6 +141,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
 
 				holder.image.setImageResource(R.drawable.ic_launcher);
 				holder.text.setText(hn.title);
+				hn.mView.setOnClickListener(MainActivity.this);
 			} else {
 				holder = (ViewHolder) hn.mView.getTag();
 			}
@@ -245,6 +248,14 @@ public class MainActivity extends Activity implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		Intent i = new Intent();
+		i.setClass(this, NewsActivity.class);
+		startActivity(i);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
+	}
+
+	@Override
+	public void onClick(View v) {
 		Intent i = new Intent();
 		i.setClass(this, NewsActivity.class);
 		startActivity(i);
